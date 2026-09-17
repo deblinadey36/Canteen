@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Cart</title>
+<style>
+  :root{
+    --bg: #FBF3E9;
+    --card-bg: #FFFFFF;
+    --red: #E1462B;
+    --text-dark: #1E1B18;
+    --text-muted: #837A72;
+    --badge-bg: #F3E4C6;
+  }
+  *{ box-sizing: border-box; margin:0; padding:0; }
+  body{
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: #ddd;
+    display:flex;
+    justify-content:center;
+    padding: 24px 0;
+  }
+  .phone{
+    width: 390px;
+    max-width: 100%;
+    background: var(--bg);
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    display: flex;
+    flex-direction: column;
+  }
+  .header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 22px 22px 18px;
+  }
+  .header h1{
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-dark);
+  }
+  .icon-btn{
+    width: 32px;
+    height: 32px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor: pointer;
+  }
+  .content{
+    padding: 0 20px;
+    flex: 1;
+  }
+  .cart-item{
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 14px;
+    display:flex;
+    align-items:center;
+    gap: 14px;
+    margin-bottom: 14px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+  }
+  .cart-item img{
+    width: 84px;
+    height: 84px;
+    border-radius: 16px;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: #eee;
+  }
+  .item-info{
+    flex: 1;
+    min-width: 0;
+  }
+  .item-info h2{
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 3px;
+  }
+  .item-info .source{
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+  .qty-control{
+    display:flex;
+    align-items:center;
+    gap: 16px;
+    border: 1.5px solid #E4DACB;
+    border-radius: 12px;
+    padding: 6px 14px;
+    width: fit-content;
+  }
+  .qty-control button{
+    background: none;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-dark);
+    cursor: pointer;
+    line-height: 1;
+  }
+  .qty-control .count{
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-dark);
+    min-width: 12px;
+    text-align: center;
+  }
+  .item-price{
+    align-self: flex-start;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--red);
+    white-space: nowrap;
+  }
+  .summary{
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 6px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+  }
+  .summary-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size: 15px;
+    color: var(--text-dark);
+    margin-bottom: 14px;
+  }
+  .summary-row span:first-child{
+    color: var(--text-muted);
+  }
+  .summary-row.bold span:last-child{
+    font-weight: 700;
+    font-size: 16px;
+  }
+  .time-badge{
+    background: var(--badge-bg);
+    border-radius: 12px;
+    padding: 14px 16px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-weight: 700;
+    color: var(--red);
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+  .pay-btn{
+    width: 100%;
+    background: var(--red);
+    color: #fff;
+    border: none;
+    border-radius: 16px;
+    padding: 17px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .bottom-nav{
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    padding: 16px 10px 22px;
+    margin-top: 20px;
+    border-top: 1px solid #EDE3D3;
+  }
+  .nav-item{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--text-muted);
+    position: relative;
+  }
+  .nav-item.active{
+    color: var(--red);
+  }
+  .nav-item svg{
+    width: 22px;
+    height: 22px;
+  }
+  .nav-badge{
+    position:absolute;
+    top: -4px;
+    right: -8px;
+    background: var(--red);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+</style>
+</head>
+<body>
+
+<div class="phone">
+
+  <div class="header">
+    <div class="icon-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="#1E1B18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h1>My Cart</h1>
+    <div class="icon-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2m-8 0v12a2 2 0 002 2h6a2 2 0 002-2V7" stroke="#1E1B18" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <div class="cart-item">
+      <img src="veg-meal.png" alt="Veg Meal">
+      <div class="item-info">
+        <h2>Veg Meal</h2>
+        <div class="source">Food Court</div>
+        <div class="qty-control">
+          <button type="button" onclick="updateQty(this,-1)">&minus;</button>
+          <span class="count">1</span>
+          <button type="button" onclick="updateQty(this,1)">+</button>
+        </div>
+      </div>
+      <div class="item-price">₹80</div>
+    </div>
+
+    <div class="cart-item">
+      <img src="chicken-meal.png" alt="Chicken Meal">
+      <div class="item-info">
+        <h2>Chicken Meal</h2>
+        <div class="source">Food Court</div>
+        <div class="qty-control">
+          <button type="button" onclick="updateQty(this,-1)">&minus;</button>
+          <span class="count">1</span>
+          <button type="button" onclick="updateQty(this,1)">+</button>
+        </div>
+      </div>
+      <div class="item-price">₹130</div>
+    </div>
+
+    <div class="cart-item">
+      <img src="Cappuccino.png" alt="Cappuccino">
+      <div class="item-info">
+        <h2>Cappuccino</h2>
+        <div class="source">CCD</div>
+        <div class="qty-control">
+          <button type="button" onclick="updateQty(this,-1)">&minus;</button>
+          <span class="count">1</span>
+          <button type="button" onclick="updateQty(this,1)">+</button>
+        </div>
+      </div>
+      <div class="item-price">₹110</div>
+    </div>
+
+    <div class="cart-item">
+      <img src="bread-ghugni.png" alt="Bread Chogni">
+      <div class="item-info">
+        <h2>Bread Chogni</h2>
+        <div class="source">Panda Junction</div>
+        <div class="qty-control">
+          <button type="button" onclick="updateQty(this,-1)">&minus;</button>
+          <span class="count">1</span>
+          <button type="button" onclick="updateQty(this,1)">+</button>
+        </div>
+      </div>
+      <div class="item-price">₹110</div>
+    </div>
+
+    <div class="summary">
+      <div class="summary-row">
+        <span>Total Items</span>
+        <span id="totalItems">4</span>
+      </div>
+      <div class="summary-row bold">
+        <span>Subtotal</span>
+        <span id="subtotal">₹370</span>
+      </div>
+      <div class="time-badge">
+        <span>Estimated Time</span>
+        <span>20 mins</span>
+      </div>
+      <button class="pay-btn">Proceed to Pay</button>
+    </div>
+
+  </div>
+
+  <div class="bottom-nav">
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M3 11l9-8 9 8" stroke="#837A72" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 10v9a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1v-9" stroke="#837A72" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Home
+    </div>
+    <div class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M3 3h2l2.4 12.2a2 2 0 002 1.8h8.2a2 2 0 002-1.6L21 8H6" stroke="#E1462B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="21" r="1.4" fill="#E1462B"/><circle cx="18" cy="21" r="1.4" fill="#E1462B"/></svg>
+      Cart
+      <span class="nav-badge" id="navBadge">4</span>
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M6 3h9l3 3v15H6V3z" stroke="#837A72" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 9h6M9 13h6M9 17h3" stroke="#837A72" stroke-width="1.6" stroke-linecap="round"/></svg>
+      Orders
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.5" stroke="#837A72" stroke-width="1.8"/><path d="M4.5 20c1.5-4 4.5-6 7.5-6s6 2 7.5 6" stroke="#837A72" stroke-width="1.8" stroke-linecap="round"/></svg>
+      Profile
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const prices = { 0: 80, 1: 130, 2: 110, 3: 110 };
+  const qtyEls = document.querySelectorAll('.cart-item');
+
+  function updateQty(btn, change){
+    const item = btn.closest('.cart-item');
+    const countEl = item.querySelector('.count');
+    let count = Math.max(1, parseInt(countEl.textContent) + change);
+    countEl.textContent = count;
+    recalc();
+  }
+
+  function recalc(){
+    let totalItems = 0, subtotal = 0;
+    qtyEls.forEach((item, i) => {
+      const q = parseInt(item.querySelector('.count').textContent);
+      totalItems += q;
+      subtotal += q * prices[i];
+    });
+    document.getElementById('totalItems').textContent = totalItems;
+    document.getElementById('subtotal').textContent = '₹' + subtotal;
+    document.getElementById('navBadge').textContent = totalItems;
+  }
+</script>
+
+</body>
+</html>
