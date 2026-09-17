@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Food Details</title>
+<style>
+  :root{
+    --bg: #FBF3E9;
+    --red: #E1462B;
+    --text-dark: #1E1B18;
+    --text-muted: #837A72;
+    --badge-bg: #F3E4C6;
+  }
+  *{ box-sizing: border-box; margin:0; padding:0; }
+  body{
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: #ddd;
+    display:flex;
+    justify-content:center;
+    padding: 24px 0;
+  }
+  .phone{
+    width: 390px;
+    max-width: 100%;
+    background: var(--bg);
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    padding: 28px 24px 30px;
+  }
+  .header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom: 24px;
+  }
+  .header h1{
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--text-dark);
+  }
+  .icon-btn{
+    width: 36px;
+    height: 36px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor: pointer;
+  }
+  .food-img-wrap{
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 24px;
+    overflow: hidden;
+    margin-bottom: 22px;
+    background: #eee;
+  }
+  .food-img-wrap img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .title-row{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    margin-bottom: 12px;
+  }
+  .title-row h2{
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text-dark);
+  }
+  .price{
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--red);
+    white-space: nowrap;
+  }
+  .description{
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+  }
+  .time-badge{
+    display:flex;
+    align-items:center;
+    gap: 14px;
+    background: var(--badge-bg);
+    border-radius: 16px;
+    padding: 14px 18px;
+    margin-bottom: 26px;
+  }
+  .time-badge svg{
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+  .time-badge .label{
+    font-size: 14px;
+    color: var(--text-dark);
+  }
+  .time-badge .value{
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-dark);
+  }
+  .qty-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom: 20px;
+  }
+  .qty-row .label{
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-dark);
+  }
+  .qty-control{
+    display:flex;
+    align-items:center;
+    gap: 22px;
+    border: 1.5px solid #E4DACB;
+    border-radius: 14px;
+    padding: 10px 20px;
+  }
+  .qty-control button{
+    background: none;
+    border: none;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-dark);
+    cursor: pointer;
+    line-height: 1;
+  }
+  .qty-control .count{
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-dark);
+    min-width: 14px;
+    text-align: center;
+  }
+  .add-to-cart{
+    width: 100%;
+    background: var(--red);
+    color: #fff;
+    border: none;
+    border-radius: 18px;
+    padding: 18px;
+    font-size: 17px;
+    font-weight: 700;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap: 10px;
+    cursor: pointer;
+  }
+  .add-to-cart svg{
+    width: 20px;
+    height: 20px;
+  }
+</style>
+</head>
+<body>
+
+<div class="phone">
+
+  <div class="header">
+    <div class="icon-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="#1E1B18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h1>Food Details</h1>
+    <div class="icon-btn">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 20s-7-4.35-9.5-8.8C.8 8 2 4.5 5.3 3.7c2-.5 3.9.4 4.7 2 .8-1.6 2.7-2.5 4.7-2C17.9 4.5 19.2 8 16.5 11.2 14 15.65 12 20 12 20z" stroke="#1E1B18" stroke-width="1.8" stroke-linejoin="round"/></svg>
+    </div>
+  </div>
+
+  <div class="food-img-wrap">
+    <img src="chicken-meal.png" alt="Chicken Meal">
+  </div>
+
+  <div class="title-row">
+    <h2>Chicken Meal</h2>
+    <div class="price">₹130</div>
+  </div>
+
+  <p class="description">Spicy and tasty chicken curry served with steamed rice, salad and pickle.</p>
+
+  <div class="time-badge">
+    <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#1E1B18" stroke-width="1.6"/><path d="M12 7v5l3 2" stroke="#1E1B18" stroke-width="1.6" stroke-linecap="round"/></svg>
+    <div>
+      <div class="label">Ready in approximately</div>
+      <div class="value">20 mins</div>
+    </div>
+  </div>
+
+  <div class="qty-row">
+    <span class="label">Quantity</span>
+    <div class="qty-control">
+      <button type="button" onclick="updateQty(-1)">&minus;</button>
+      <span class="count" id="qtyCount">1</span>
+      <button type="button" onclick="updateQty(1)">+</button>
+    </div>
+  </div>
+
+  <button class="add-to-cart">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M3 3h2l2.4 12.2a2 2 0 002 1.8h8.2a2 2 0 002-1.6L21 8H6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="21" r="1.4" fill="#fff"/><circle cx="18" cy="21" r="1.4" fill="#fff"/></svg>
+    Add to Cart
+  </button>
+
+</div>
+
+<script>
+  let qty = 1;
+  function updateQty(change){
+    qty = Math.max(1, qty + change);
+    document.getElementById('qtyCount').textContent = qty;
+  }
+</script>
+
+</body>
+</html>
