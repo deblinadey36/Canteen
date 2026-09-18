@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Tracking</title>
+<style>
+  :root{
+    --bg: #FBEEDD;
+    --red: #E1462B;
+    --green: #3F9142;
+    --text-dark: #1E1B18;
+    --text-muted: #8A8078;
+    --text-faint: #C2B9AC;
+    --panel-bg: #F6DDB8;
+    --panel-bg-2: #F8E2C0;
+  }
+  *{ box-sizing: border-box; margin:0; padding:0; }
+  body{
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: #dcdcdc;
+    display:flex;
+    justify-content:center;
+    padding: 24px 0;
+  }
+  .phone{
+    width: 360px;
+    max-width: 100%;
+    background: var(--bg);
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    padding: 16px 20px 24px;
+    position: relative;
+  }
+
+  /* ---------- Background (dimmed) content ---------- */
+  .bg-content{
+    filter: brightness(0.55);
+  }
+  .status-bar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding: 4px 2px 0;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-dark);
+    margin-bottom: 14px;
+  }
+  .status-icons{ display:flex; align-items:center; gap:6px; }
+  .header{
+    display:flex;
+    align-items:center;
+    margin-bottom: 18px;
+  }
+  .icon-btn{
+    width: 26px;
+    height: 26px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink: 0;
+  }
+  .header h1{
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--text-dark);
+    flex: 1;
+    text-align: center;
+    margin-right: 26px;
+  }
+  .order-card{
+    background: var(--panel-bg);
+    border-radius: 16px;
+    padding: 16px 18px;
+    margin-bottom: 22px;
+    display: flex;
+    flex-direction: column;
+  }
+  .order-top{
+    display:flex;
+    justify-content:space-between;
+    gap: 10px;
+  }
+  .order-top .right{ text-align: right; }
+  .order-top .label{
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 3px;
+  }
+  .order-top .value{
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--text-dark);
+  }
+  .order-top .right .value{
+    font-size: 13.5px;
+    font-weight: 700;
+  }
+  .status-pill{
+    align-self: flex-end;
+    background: var(--panel-bg-2);
+    color: var(--red);
+    font-weight: 800;
+    font-size: 13px;
+    padding: 7px 18px;
+    border-radius: 20px;
+    margin-top: 12px;
+    white-space: nowrap;
+  }
+  .section-title{
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+  }
+  .timeline{ margin-bottom: 26px; }
+  .step{ display:flex; gap: 14px; }
+  .step-line{
+    display:flex;
+    flex-direction: column;
+    align-items:center;
+    flex-shrink: 0;
+  }
+  .dot{
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink: 0;
+    z-index: 1;
+  }
+  .dot.done{ background: var(--green); }
+  .dot.done svg{ width: 13px; height: 13px; }
+  .dot.active{ background: #fff; border: 3px solid var(--red); }
+  .dot.active .inner-dot{
+    width: 9px; height: 9px; border-radius: 50%; background: var(--red);
+  }
+  .dot.pending{ background: #fff; border: 2px solid #DCD2C4; }
+  .connector{ width: 2.5px; flex: 1; min-height: 34px; }
+  .connector.done{ background: var(--green); }
+  .connector.pending{ background: #DED4C4; }
+  .step-body{
+    flex: 1;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding-bottom: 26px;
+  }
+  .step-body:last-child{ padding-bottom: 0; }
+  .step-name{ font-size: 14.5px; color: var(--text-muted); }
+  .step-name.done{ color: var(--text-dark); font-weight: 500; }
+  .step-name.active{ color: var(--text-dark); font-weight: 800; }
+  .step-name.pending{ color: var(--text-faint); }
+  .step-time{ font-size: 13px; color: var(--text-muted); white-space: nowrap; }
+  .step-time.pending{ color: var(--text-faint); }
+  .eta-card{
+    background: var(--panel-bg);
+    border-radius: 16px;
+    padding: 20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 10px;
+  }
+  .eta-text .label{ font-size: 14px; color: var(--text-dark); margin-bottom: 5px; }
+  .eta-text .value{ font-size: 26px; font-weight: 800; color: var(--red); }
+  .clock-illus{ width: 92px; height: 92px; flex-shrink: 0; }
+
+  /* ---------- Modal overlay ---------- */
+  .overlay{
+    position: absolute;
+    inset: 0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 24px;
+  }
+  .modal{
+    position: relative;
+    width: 100%;
+    background: #FFFDF8;
+    border-radius: 26px;
+    padding: 54px 24px 26px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    overflow: visible;
+  }
+  .bell-wrap{
+    position: absolute;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 92px;
+    height: 92px;
+    z-index: 3;
+  }
+  .confetti-piece{
+    position: absolute;
+    width: 10px;
+    height: 4px;
+    border-radius: 2px;
+    z-index: 2;
+  }
+  .modal-title{
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 14px;
+    position: relative;
+    z-index: 4;
+  }
+  .modal-desc{
+    font-size: 15px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 4;
+  }
+  .order-id-box{
+    background: var(--panel-bg-2);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 20px;
+  }
+  .order-id-box .label{
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .order-id-box .value{
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text-dark);
+  }
+  .ok-btn{
+    width: 100%;
+    background: var(--red);
+    color: #fff;
+    border: none;
+    border-radius: 16px;
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="phone">
+
+  <div class="bg-content">
+    <div class="status-bar">
+      <span>9:41</span>
+      <div class="status-icons">
+        <svg width="17" height="11" viewBox="0 0 18 12" fill="none"><rect x="0" y="7" width="3" height="5" rx="0.5" fill="#1E1B18"/><rect x="5" y="5" width="3" height="7" rx="0.5" fill="#1E1B18"/><rect x="10" y="3" width="3" height="9" rx="0.5" fill="#1E1B18"/><rect x="15" y="0" width="3" height="12" rx="0.5" fill="#1E1B18"/></svg>
+        <svg width="15" height="11" viewBox="0 0 16 12" fill="none"><path d="M8 10.5C8.6 10.5 9 10.9 9 11.5C9 12.1 8.6 12.5 8 12.5C7.4 12.5 7 12.1 7 11.5C7 10.9 7.4 10.5 8 10.5Z" fill="#1E1B18"/><path d="M4.5 8C5.4 7.1 6.6 6.6 8 6.6C9.4 6.6 10.6 7.1 11.5 8" stroke="#1E1B18" stroke-width="1.3" fill="none"/><path d="M2 5.3C3.8 3.5 5.8 2.6 8 2.6C10.2 2.6 12.2 3.5 14 5.3" stroke="#1E1B18" stroke-width="1.3" fill="none"/></svg>
+        <svg width="23" height="11" viewBox="0 0 24 12" fill="none"><rect x="0.5" y="0.5" width="20" height="11" rx="2.5" stroke="#1E1B18"/><rect x="2" y="2" width="17" height="8" rx="1.5" fill="#1E1B18"/><rect x="21.5" y="4" width="1.5" height="4" rx="0.5" fill="#1E1B18"/></svg>
+      </div>
+    </div>
+
+    <div class="header">
+      <div class="icon-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="#1E1B18" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h1>Order Tracking</h1>
+    </div>
+
+    <div class="order-card">
+      <div class="order-top">
+        <div>
+          <div class="label">Order ID</div>
+          <div class="value">YB12345678</div>
+        </div>
+        <div class="right">
+          <div class="label">Placed on</div>
+          <div class="value">10 May, 12:30 PM</div>
+        </div>
+      </div>
+      <div class="status-pill">Preparing</div>
+    </div>
+
+    <div class="section-title">Order Status</div>
+
+    <div class="timeline">
+      <div class="step">
+        <div class="step-line">
+          <div class="dot done"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-10" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="connector done"></div>
+        </div>
+        <div class="step-body">
+          <span class="step-name done">Order Confirmed</span>
+          <span class="step-time">12:30 PM</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-line">
+          <div class="dot done"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-10" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="connector done"></div>
+        </div>
+        <div class="step-body">
+          <span class="step-name done">Payment Successful</span>
+          <span class="step-time">12:31 PM</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-line">
+          <div class="dot active"><div class="inner-dot"></div></div>
+          <div class="connector pending"></div>
+        </div>
+        <div class="step-body">
+          <span class="step-name active">Food is Being Prepared</span>
+          <span class="step-time">12:32 PM</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-line">
+          <div class="dot pending"></div>
+          <div class="connector pending"></div>
+        </div>
+        <div class="step-body">
+          <span class="step-name pending">Almost Ready</span>
+          <span class="step-time pending">--:--</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-line">
+          <div class="dot pending"></div>
+        </div>
+        <div class="step-body">
+          <span class="step-name pending">Ready for Pickup</span>
+          <span class="step-time pending">--:--</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="eta-card">
+      <div class="eta-text">
+        <div class="label">Estimated ready in</div>
+        <div class="value">15 min</div>
+      </div>
+      <svg class="clock-illus" viewBox="0 0 120 120" fill="none">
+        <circle cx="28" cy="24" r="11" fill="#1E1B18"/>
+        <circle cx="92" cy="24" r="11" fill="#1E1B18"/>
+        <circle cx="28" cy="14" r="3" fill="#1E1B18"/>
+        <circle cx="92" cy="14" r="3" fill="#1E1B18"/>
+        <path d="M60 6v18" stroke="#1E1B18" stroke-width="3" stroke-linecap="round"/>
+        <path d="M60 6l14 7-14 7z" fill="#E1462B"/>
+        <circle cx="60" cy="68" r="42" fill="#1E1B18"/>
+        <circle cx="60" cy="68" r="35" fill="#fff"/>
+        <g stroke="#C2B9AC" stroke-width="2">
+          <line x1="60" y1="37" x2="60" y2="43"/>
+          <line x1="60" y1="93" x2="60" y2="99"/>
+          <line x1="29" y1="68" x2="35" y2="68"/>
+          <line x1="85" y1="68" x2="91" y2="68"/>
+        </g>
+        <line x1="60" y1="68" x2="60" y2="46" stroke="#1E1B18" stroke-width="4" stroke-linecap="round"/>
+        <line x1="60" y1="68" x2="80" y2="68" stroke="#E8A33D" stroke-width="3.2" stroke-linecap="round"/>
+        <circle cx="60" cy="68" r="3.6" fill="#1E1B18"/>
+        <path d="M42 107l-8 11" stroke="#1E1B18" stroke-width="4" stroke-linecap="round"/>
+        <ellipse cx="32" cy="120" rx="7" ry="4" fill="#E8A33D"/>
+        <path d="M78 107l8 11" stroke="#1E1B18" stroke-width="4" stroke-linecap="round"/>
+        <ellipse cx="88" cy="120" rx="7" ry="4" fill="#E8A33D"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ---------- Modal ---------- -->
+  <div class="overlay" id="overlay">
+    <div class="modal" id="modal">
+      <div class="bell-wrap">
+        <svg viewBox="0 0 100 110" width="92" height="92">
+          <defs>
+            <linearGradient id="bellGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#FFC94D"/>
+              <stop offset="1" stop-color="#F5A623"/>
+            </linearGradient>
+          </defs>
+          <!-- top knob -->
+          <rect x="47" y="4" width="6" height="8" rx="2" fill="#E8951A"/>
+          <circle cx="50" cy="6" r="5" fill="#F5A623"/>
+          <!-- bell body -->
+          <path d="M50 14c-3 0-5 2-5 5v2c-11 3-18 13-18 25v16l-7 9h60l-7-9V46c0-12-7-22-18-25v-2c0-3-2-5-5-5z" fill="url(#bellGrad)"/>
+          <!-- shine -->
+          <path d="M34 32c-4 5-6 11-6 17" stroke="#FFE3A0" stroke-width="3" stroke-linecap="round" fill="none"/>
+          <!-- bottom rim -->
+          <rect x="18" y="71" width="64" height="7" rx="3.5" fill="#E8951A"/>
+          <!-- clapper -->
+          <ellipse cx="50" cy="90" rx="9" ry="9" fill="#E8951A"/>
+        </svg>
+      </div>
+
+      <div class="modal-title">🎉 Your Food is Ready!</div>
+      <div class="modal-desc">Your order is ready for pickup. Please collect your food from the counter.</div>
+
+      <div class="order-id-box">
+        <div class="label">Order ID</div>
+        <div class="value">YB12345678</div>
+      </div>
+
+      <button class="ok-btn" onclick="document.getElementById('overlay').style.display='none'">Ok, Got It</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const colors = ['#E1462B','#F2A93B','#4C8DE0','#2FA97A','#E85AA0','#7FC77C','#F5D142'];
+  const modal = document.getElementById('modal');
+
+  // Ring of confetti around the bell area, kept clear of the text block
+  const ringSpots = [
+    {x: 8,  y: 4},  {x: 20, y: -4}, {x: 34, y: -10}, {x: 66, y: -10}, {x: 80, y: -4}, {x: 92, y: 4},
+    {x: 2,  y: 22}, {x: 98, y: 22},
+    {x: 6,  y: 42}, {x: 94, y: 42},
+    {x: 10, y: 62}, {x: 90, y: 62},
+    {x: 4,  y: 80}, {x: 96, y: 80},
+    {x: 14, y: 96}, {x: 86, y: 96}
+  ];
+
+  ringSpots.forEach((spot, i) => {
+    const c = document.createElement('div');
+    c.className = 'confetti-piece';
+    c.style.left = spot.x + '%';
+    c.style.top = spot.y + '%';
+    c.style.background = colors[i % colors.length];
+    c.style.transform = `rotate(${Math.random()*360}deg)`;
+    modal.appendChild(c);
+  });
+</script>
+
+</body>
+</html>

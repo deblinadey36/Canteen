@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Tracking</title>
+<style>
+  :root{
+    --bg: #FBEEDD;
+    --red: #E1462B;
+    --green: #3F9142;
+    --text-dark: #1E1B18;
+    --text-muted: #8A8078;
+    --text-faint: #C2B9AC;
+    --panel-bg: #F6DDB8;
+    --panel-bg-2: #F8E2C0;
+  }
+  *{ box-sizing: border-box; margin:0; padding:0; }
+  body{
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: #dcdcdc;
+    display:flex;
+    justify-content:center;
+    padding: 24px 0;
+  }
+  .phone{
+    width: 360px;
+    max-width: 100%;
+    background: var(--bg);
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    padding: 16px 20px 24px;
+  }
+  .status-bar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding: 4px 2px 0;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-dark);
+    margin-bottom: 14px;
+  }
+  .status-icons{ display:flex; align-items:center; gap:6px; }
+
+  .header{
+    display:flex;
+    align-items:center;
+    margin-bottom: 18px;
+  }
+  .icon-btn{
+    width: 26px;
+    height: 26px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .header h1{
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--text-dark);
+    flex: 1;
+    text-align: center;
+    margin-right: 26px;
+  }
+
+  .order-card{
+    background: var(--panel-bg);
+    border-radius: 16px;
+    padding: 16px 18px;
+    margin-bottom: 22px;
+    display: flex;
+    flex-direction: column;
+  }
+  .order-top{
+    display:flex;
+    justify-content:space-between;
+    gap: 10px;
+  }
+  .order-top .right{ text-align: right; }
+  .order-top .label{
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 3px;
+  }
+  .order-top .value{
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--text-dark);
+  }
+  .order-top .right .value{
+    font-size: 13.5px;
+    font-weight: 700;
+  }
+  .status-pill{
+    align-self: flex-end;
+    background: var(--panel-bg-2);
+    color: var(--red);
+    font-weight: 800;
+    font-size: 13px;
+    padding: 7px 18px;
+    border-radius: 20px;
+    margin-top: 12px;
+    white-space: nowrap;
+  }
+
+  .section-title{
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+  }
+
+  .timeline{
+    margin-bottom: 26px;
+  }
+  .step{
+    display:flex;
+    gap: 14px;
+  }
+  .step-line{
+    display:flex;
+    flex-direction: column;
+    align-items:center;
+    flex-shrink: 0;
+  }
+  .dot{
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink: 0;
+    z-index: 1;
+  }
+  .dot.done{ background: var(--green); }
+  .dot.done svg{ width: 13px; height: 13px; }
+  .dot.active{
+    background: #fff;
+    border: 3px solid var(--red);
+  }
+  .dot.active .inner-dot{
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--red);
+  }
+  .dot.pending{
+    background: #fff;
+    border: 2px solid #DCD2C4;
+  }
+  .connector{
+    width: 2.5px;
+    flex: 1;
+    min-height: 34px;
+  }
+  .connector.done{ background: var(--green); }
+  .connector.pending{ background: #DED4C4; }
+
+  .step-body{
+    flex: 1;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding-bottom: 26px;
+  }
+  .step-body:last-child{ padding-bottom: 0; }
+  .step-name{
+    font-size: 14.5px;
+    color: var(--text-muted);
+  }
+  .step-name.done{ color: var(--text-dark); font-weight: 500; }
+  .step-name.active{ color: var(--text-dark); font-weight: 800; }
+  .step-name.pending{ color: var(--text-faint); }
+  .step-time{
+    font-size: 13px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .step-time.pending{ color: var(--text-faint); }
+
+  .eta-card{
+    background: var(--panel-bg);
+    border-radius: 16px;
+    padding: 20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 10px;
+  }
+  .eta-text .label{
+    font-size: 14px;
+    color: var(--text-dark);
+    margin-bottom: 5px;
+  }
+  .eta-text .value{
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--red);
+  }
+  .clock-illus{
+    width: 92px;
+    height: 92px;
+    flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="phone">
+
+  <div class="status-bar">
+    <span>9:41</span>
+    <div class="status-icons">
+      <svg width="17" height="11" viewBox="0 0 18 12" fill="none"><rect x="0" y="7" width="3" height="5" rx="0.5" fill="#1E1B18"/><rect x="5" y="5" width="3" height="7" rx="0.5" fill="#1E1B18"/><rect x="10" y="3" width="3" height="9" rx="0.5" fill="#1E1B18"/><rect x="15" y="0" width="3" height="12" rx="0.5" fill="#1E1B18"/></svg>
+      <svg width="15" height="11" viewBox="0 0 16 12" fill="none"><path d="M8 10.5C8.6 10.5 9 10.9 9 11.5C9 12.1 8.6 12.5 8 12.5C7.4 12.5 7 12.1 7 11.5C7 10.9 7.4 10.5 8 10.5Z" fill="#1E1B18"/><path d="M4.5 8C5.4 7.1 6.6 6.6 8 6.6C9.4 6.6 10.6 7.1 11.5 8" stroke="#1E1B18" stroke-width="1.3" fill="none"/><path d="M2 5.3C3.8 3.5 5.8 2.6 8 2.6C10.2 2.6 12.2 3.5 14 5.3" stroke="#1E1B18" stroke-width="1.3" fill="none"/></svg>
+      <svg width="23" height="11" viewBox="0 0 24 12" fill="none"><rect x="0.5" y="0.5" width="20" height="11" rx="2.5" stroke="#1E1B18"/><rect x="2" y="2" width="17" height="8" rx="1.5" fill="#1E1B18"/><rect x="21.5" y="4" width="1.5" height="4" rx="0.5" fill="#1E1B18"/></svg>
+    </div>
+  </div>
+
+  <div class="header">
+    <div class="icon-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="#1E1B18" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h1>Order Tracking</h1>
+  </div>
+
+  <div class="order-card">
+    <div class="order-top">
+      <div>
+        <div class="label">Order ID</div>
+        <div class="value">YB12345678</div>
+      </div>
+      <div class="right">
+        <div class="label">Placed on</div>
+        <div class="value">10 May, 12:30 PM</div>
+      </div>
+    </div>
+    <div class="status-pill">Preparing</div>
+  </div>
+
+  <div class="section-title">Order Status</div>
+
+  <div class="timeline">
+
+    <div class="step">
+      <div class="step-line">
+        <div class="dot done">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-10" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="connector done"></div>
+      </div>
+      <div class="step-body">
+        <span class="step-name done">Order Confirmed</span>
+        <span class="step-time">12:30 PM</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-line">
+        <div class="dot done">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-10" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="connector done"></div>
+      </div>
+      <div class="step-body">
+        <span class="step-name done">Payment Successful</span>
+        <span class="step-time">12:31 PM</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-line">
+        <div class="dot active"><div class="inner-dot"></div></div>
+        <div class="connector pending"></div>
+      </div>
+      <div class="step-body">
+        <span class="step-name active">Food is Being Prepared</span>
+        <span class="step-time">12:32 PM</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-line">
+        <div class="dot pending"></div>
+        <div class="connector pending"></div>
+      </div>
+      <div class="step-body">
+        <span class="step-name pending">Almost Ready</span>
+        <span class="step-time pending">--:--</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-line">
+        <div class="dot pending"></div>
+      </div>
+      <div class="step-body">
+        <span class="step-name pending">Ready for Pickup</span>
+        <span class="step-time pending">--:--</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="eta-card">
+    <div class="eta-text">
+      <div class="label">Estimated ready in</div>
+      <div class="value">15 min</div>
+    </div>
+    <svg class="clock-illus" viewBox="0 0 120 120" fill="none">
+      <!-- bells -->
+      <circle cx="28" cy="24" r="11" fill="#1E1B18"/>
+      <circle cx="92" cy="24" r="11" fill="#1E1B18"/>
+      <circle cx="28" cy="14" r="3" fill="#1E1B18"/>
+      <circle cx="92" cy="14" r="3" fill="#1E1B18"/>
+      <!-- red flag on top -->
+      <path d="M60 6v18" stroke="#1E1B18" stroke-width="3" stroke-linecap="round"/>
+      <path d="M60 6l14 7-14 7z" fill="#E1462B"/>
+      <!-- clock body -->
+      <circle cx="60" cy="68" r="42" fill="#1E1B18"/>
+      <circle cx="60" cy="68" r="35" fill="#fff"/>
+      <!-- tick marks -->
+      <g stroke="#C2B9AC" stroke-width="2">
+        <line x1="60" y1="37" x2="60" y2="43"/>
+        <line x1="60" y1="93" x2="60" y2="99"/>
+        <line x1="29" y1="68" x2="35" y2="68"/>
+        <line x1="85" y1="68" x2="91" y2="68"/>
+      </g>
+      <!-- hands -->
+      <line x1="60" y1="68" x2="60" y2="46" stroke="#1E1B18" stroke-width="4" stroke-linecap="round"/>
+      <line x1="60" y1="68" x2="80" y2="68" stroke="#E8A33D" stroke-width="3.2" stroke-linecap="round"/>
+      <circle cx="60" cy="68" r="3.6" fill="#1E1B18"/>
+      <!-- feet -->
+      <path d="M42 107l-8 11" stroke="#1E1B18" stroke-width="4" stroke-linecap="round"/>
+      <ellipse cx="32" cy="120" rx="7" ry="4" fill="#E8A33D"/>
+      <path d="M78 107l8 11" stroke="#1E1B18" stroke-width="4" stroke-linecap="round"/>
+      <ellipse cx="88" cy="120" rx="7" ry="4" fill="#E8A33D"/>
+    </svg>
+  </div>
+
+</div>
+
+</body>
+</html>
